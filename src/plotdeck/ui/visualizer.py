@@ -49,6 +49,8 @@ class Visualizer(QWidget):
         self._plot = pg.PlotWidget(background=self._token["editor"])
         self._plot.showGrid(x=True, y=True, alpha=0.12)
         self._plot.setAspectLocked(True)
+        # Mouse wheel zooms, left-drag pans (pyqtgraph defaults, made explicit).
+        self._plot.setMouseEnabled(x=True, y=True)
         self._plot.setLabel("bottom", "X", units="mm")
         self._plot.setLabel("left", "Y", units="mm")
         self._plot.getAxis("bottom").setPen(pg.mkPen(self._token["border"]))
@@ -79,8 +81,18 @@ class Visualizer(QWidget):
 
         header = QLabel("TOOLPATH")
         header.setObjectName("SectionHeader")
+        self._zoom_out_button = QPushButton("−")
+        self._zoom_out_button.setFixedWidth(30)
+        self._zoom_out_button.setToolTip("Zoom out (⌘− or scroll)")
+        self._zoom_out_button.setAccessibleName("Zoom out")
+        self._zoom_out_button.clicked.connect(self.zoom_out)
+        self._zoom_in_button = QPushButton("+")
+        self._zoom_in_button.setFixedWidth(30)
+        self._zoom_in_button.setToolTip("Zoom in (⌘+ or scroll)")
+        self._zoom_in_button.setAccessibleName("Zoom in")
+        self._zoom_in_button.clicked.connect(self.zoom_in)
         self._fit = QPushButton("Fit")
-        self._fit.setToolTip("Fit the toolpath in view (F)")
+        self._fit.setToolTip("Fit the toolpath in view (F or ⌘0)")
         self._fit.clicked.connect(self.fit)
         self._two_d = QPushButton("2D")
         self._three_d = QPushButton("3D")
@@ -96,12 +108,15 @@ class Visualizer(QWidget):
         top.addStretch(1)
         top.addWidget(self._two_d)
         top.addWidget(self._three_d)
+        top.addWidget(self._zoom_out_button)
+        top.addWidget(self._zoom_in_button)
         top.addWidget(self._fit)
 
         self._info = QLabel("No file loaded")
         self._info.setObjectName("Muted")
-        self._legend = QLabel("green = executed · dashed = remaining")
+        self._legend = QLabel()
         self._legend.setObjectName("Legend")
+        self._update_legend()
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 8, 10, 8)
@@ -208,6 +223,34 @@ class Visualizer(QWidget):
             )
             self._marker_3d.setVisible(True)
 
+    def zoom_in(self) -> None:
+        self.zoom(0.8)
+
+    def zoom_out(self) -> None:
+        self.zoom(1.25)
+
+    def zoom(self, factor: float) -> None:
+        """Zoom by *factor* (<1 zooms in, >1 zooms out) in 2D or 3D."""
+        if factor <= 0:
+            return
+        if self._stack.currentIndex() == 1:
+            if self._gl is None:
+                return
+            distance = float(self._gl.opts.get("distance", 10.0))
+            self._gl.setCameraPosition(distance=max(0.05, distance * factor))
+            self._gl.update()
+            return
+        self._plot.getViewBox().scaleBy((factor, factor))
+        self._plot.update()
+
+    def _update_legend(self) -> None:
+        if self._stack.currentIndex() == 1:
+            self._legend.setText("drag to rotate · scroll or +/− to zoom")
+        else:
+            self._legend.setText(
+                "green = executed · dashed = remaining · scroll or +/− to zoom · drag to pan"
+            )
+
     def fit(self) -> None:
         if self._toolpath is None or self._toolpath.bounds is None:
             self._plot.setRange(xRange=(-10, 10), yRange=(-10, 10), padding=0)
@@ -235,6 +278,7 @@ class Visualizer(QWidget):
             self._two_d.setChecked(True)
             self._three_d.setChecked(False)
             self._stack.setCurrentIndex(0)
+            self._update_legend()
             return
         self._ensure_3d()
         if self._gl is None:
@@ -244,6 +288,7 @@ class Visualizer(QWidget):
         self._two_d.setChecked(False)
         self._three_d.setChecked(True)
         self._stack.setCurrentIndex(1)
+        self._update_legend()
         self._refresh_3d()
         self.fit()
 

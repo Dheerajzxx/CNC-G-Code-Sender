@@ -22,8 +22,9 @@ from the Manual toolbar button or Help → User Manual (F1).**
   executed-line markers, error markers, find/replace, go-to-line, toggle
   comment, strip comments, renumber, and offset/scale/rotate transforms.
 - **Visualizer** — 2D toolpath with executed (green) and remaining (dashed)
-  paths, live tool position, fit-to-view, bounding box and time estimate.
-  Optional 3D view when PyOpenGL is installed.
+  paths, live tool position, scroll/button zoom, pan, fit-to-view, bounding
+  box and time estimate. Optional 3D view with orbit and zoom when PyOpenGL
+  is installed.
 - **Machine control** — jog pad with step chips and keyboard control, work
   zeroing per axis, G54–G59 selection, homing, unlock, jog cancel, feed /
   rapid / spindle overrides, spindle on/off, and a Z-probe wizard.

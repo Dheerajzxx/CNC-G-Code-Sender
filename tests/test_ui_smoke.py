@@ -84,6 +84,47 @@ def test_large_editor_file_loads(window):
     assert window.editor.document().characterCount() > 500_000
 
 
+def test_toolpath_zoom_controls(window):
+    window.editor.set_source_text("G21\nG0 X0 Y0\nG1 X50 Y30 F100")
+    window._refresh_program()
+    view = window.visualizer._plot.getViewBox()
+    before = view.viewRange()
+    before_width = before[0][1] - before[0][0]
+
+    window.visualizer._zoom_in_button.click()
+    zoomed = view.viewRange()
+    zoomed_width = zoomed[0][1] - zoomed[0][0]
+    assert zoomed_width < before_width
+
+    window.visualizer._zoom_out_button.click()
+    restored = view.viewRange()
+    restored_width = restored[0][1] - restored[0][0]
+    assert restored_width > zoomed_width
+
+
+def test_toolpath_zoom_in_3d_adjusts_camera_distance(window):
+    class FakeGl:
+        def __init__(self):
+            self.opts = {"distance": 100.0}
+
+        def setCameraPosition(self, **kwargs):
+            self.opts.update(kwargs)
+
+        def update(self):
+            pass
+
+    window.editor.set_source_text("G21\nG0 X0 Y0\nG1 X10 Y10 F100")
+    window._refresh_program()
+    fake = FakeGl()
+    window.visualizer._gl = fake
+    window.visualizer._stack.setCurrentIndex(1)
+
+    window.visualizer.zoom_in()
+    assert fake.opts["distance"] == pytest.approx(80.0)
+    window.visualizer.zoom_out()
+    assert fake.opts["distance"] == pytest.approx(100.0)
+
+
 def test_user_manual_is_available_and_renders(window, qtbot):
     assert manual_path() is not None
     assert "PlotDeck User Manual" in manual_text()

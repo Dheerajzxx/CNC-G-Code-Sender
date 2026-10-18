@@ -175,7 +175,9 @@ appears above the editor when needed.
 
 - **Toolpath** — 2D preview by default, with an optional 3D view when PyOpenGL
   is installed. Green is executed motion, dashed grey is remaining motion, and
-  the dot is the live tool position.
+  the dot is the live tool position. Zoom with the mouse wheel or the **+ / −**
+  buttons; **Fit** restores the whole path. In 2D, drag to pan. In 3D, drag to
+  rotate and scroll or use **+ / −** to zoom.
 - **Job** — progress, percentage, `line x / n`, elapsed time and estimated
   remaining time.
 
@@ -183,6 +185,14 @@ appears above the editor when needed.
 
 Connection state, active port/baud, a notice line, cursor position, and the
 active work coordinate system, machine state and triggered pins (if any).
+
+### Zooming the toolpath
+
+Use the mouse wheel over the preview, the **+** and **−** buttons in the
+Toolpath header, or **View → Zoom In / Zoom Out** (⌘+ / ⌘−). Zoom is centred on
+the current view, so you can inspect a detail and then press **Fit** (F or ⌘0)
+to return to the whole job. 2D supports left-drag panning; 3D supports
+drag-to-rotate, and the wheel zooms toward the machine.
 
 ---
 
@@ -551,6 +561,7 @@ frame. Keep a backup of the settings you rely on.
 | Stop | ⌘. |
 | Soft reset | ⌘⇧. |
 | Connect / Disconnect | ⌘K |
+| Zoom in / out (2D or 3D) | ⌘+ / ⌘− |
 | Fit toolpath | ⌘0 |
 | Focus console | ⌘` |
 | Fit toolpath (preview focused) | F |

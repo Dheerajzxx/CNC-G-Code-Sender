@@ -263,6 +263,22 @@ class MainWindow(QMainWindow):
         view_menu.addAction(self.dock_toolpath.toggleViewAction())
         view_menu.addAction(self.dock_job.toggleViewAction())
         view_menu.addSeparator()
+        view_menu.addAction(
+            self._action(
+                "Zoom In",
+                self.visualizer.zoom_in,
+                QKeySequence.StandardKey.ZoomIn,
+                "Zoom into the toolpath",
+            )
+        )
+        view_menu.addAction(
+            self._action(
+                "Zoom Out",
+                self.visualizer.zoom_out,
+                QKeySequence.StandardKey.ZoomOut,
+                "Zoom out of the toolpath",
+            )
+        )
         view_menu.addAction(self._action("Fit Toolpath", self.visualizer.fit, "Ctrl+0"))
         theme_menu = view_menu.addMenu("Theme")
         self._theme_group = QActionGroup(self)
