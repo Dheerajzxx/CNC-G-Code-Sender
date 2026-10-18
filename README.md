@@ -10,6 +10,8 @@ control (jog, home, zero, overrides) with live position and toolpath feedback.
 **New here? Read [USER_MANUAL.md](USER_MANUAL.md), or open it inside the app
 from the Manual toolbar button or Help → User Manual (F1).**
 
+![PlotDeck screenshot](images/PlotDeck.png)
+
 ## Features
 
 - **Connection** — USB port discovery, 115200 baud default, GRBL banner
