@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtGui import QKeyEvent, QTextCursor
 
 from plotdeck.core.status import MachineStatus
+from plotdeck.ui import manual as manual_module
 from plotdeck.ui.main_window import MainWindow
 from plotdeck.ui.manual import ManualDialog, manual_path, manual_text
 from plotdeck.utils.settings import AppSettings
@@ -139,6 +142,15 @@ def test_user_manual_is_available_and_renders(window, qtbot):
     assert "Safety first" in rendered
     assert "Troubleshooting" in rendered
     dialog.close()
+
+
+def test_packaged_manual_copy_matches_root():
+    root = Path(__file__).resolve().parents[1] / "USER_MANUAL.md"
+    packaged = Path(manual_module.__file__).resolve().parent / "resources" / "USER_MANUAL.md"
+    assert packaged.is_file(), "src/plotdeck/ui/resources/USER_MANUAL.md is missing"
+    assert packaged.read_text(encoding="utf-8") == root.read_text(
+        encoding="utf-8"
+    ), "Packaged manual is stale; re-copy USER_MANUAL.md into src/plotdeck/ui/resources/"
 
 
 def test_theme_switch(window):

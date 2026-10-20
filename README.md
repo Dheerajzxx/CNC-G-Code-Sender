@@ -197,6 +197,10 @@ streamer are plain Python, so tests and CLI use do not need a Qt event loop.
 - The app icon is optional; drop `packaging/icon.icns` in place before building
   if you want one.
 
+## License
+
+MIT — see [LICENSE](LICENSE).
+
 ## Safety
 
 This software controls a machine that can injure you. Wear eye protection,
